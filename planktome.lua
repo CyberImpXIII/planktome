@@ -42,36 +42,57 @@ function reset()
   focus.y = viewport.height/2
   end
 
-function arrow_up()
-  screen.pixel(focus.x  + 1, focus.y - 1)
-  screen.pixel(focus.x  + 1, focus.y + 1)
-  screen.pixel(focus.x  + 1, focus.y)
-  screen.pixel(focus.x, focus.y)
-  screen.pixel(focus.x  - 1, focus.y)
-  screen.pixel(focus.x  + 2, focus.y)
-  screen.fill()
-  screen.clear()
+local Arrow = {} -- the table representing the class, which will double as the metatable for the instances
+Arrow.__index = Arrow -- failed table lookups on the instances should fallback to the class table, to get methods
+
+-- syntax equivalent to "MyClass.new = function..."
+function Arrow.new(x, y, arrowType)
+  local self = setmetatable({}, MyClass)
+  self.arrowType = arrowType
+  self.position = { x = x, y = y}
+  return self
 end
 
-function arrow_left()
+function Arrow.arrowCycle(self, newval)
+  
+  self.arrowType = newval
+end
 
-  screen.pixel(focus.x  - 1, focus.y - 1)
-  screen.pixel(focus.x  - 1, focus.y + 1)
-  screen.pixel(focus.x  - 1, focus.y)
-  screen.pixel(focus.x, focus.y)
-  screen.pixel(focus.x  - 1, focus.y)
-  screen.pixel(focus.x - 2  , focus.y )
-    screen.pixel(focus.x + 1  , focus.y )
+function Arrow.get_Arrow_Type(self)
+  return self.arrowType
+end
+
+local i = Arrow.new(5, 5, 0)
+
+function Arrow.arrow_up(self)
+  screen.pixel(self.position.x  + 1, self.position.y - 1)
+  screen.pixel(self.position.x  + 1, self.position.y + 1)
+  screen.pixel(self.position.x  + 1, self.position.y)
+  screen.pixel(self.position.x, self.position.y)
+  screen.pixel(self.position.x  - 1, self.position.y)
+  screen.pixel(self.position.x  + 2, self.position.y)
   screen.fill()
 end
 
-function arrow_right()
-      screen.pixel(focus.x + 2  , focus.y )
-      screen.pixel(focus.x + 1  , focus.y )
-      screen.pixel(focus.x , focus.y )
-      screen.pixel(focus.x - 1  , focus.y )
-      screen.pixel(focus.x + 1  , focus.y + 1)
-      screen.pixel(focus.x + 1  , focus.y - 1)
+function Arrow.arrow_left(self)
+
+  screen.pixel(self.position.x  - 1, self.position.y - 1)
+  screen.pixel(self.position.x  - 1, self.position.y + 1)
+  screen.pixel(self.position.x  - 1, self.position.y)
+  screen.pixel(self.position.x, self.position.y)
+  screen.pixel(self.position.x  - 1, self.position.y)
+  screen.pixel(self.position.x - 2  , self.position.y )
+    screen.pixel(self.position.x + 1  , self.position.y )
+  screen.fill()
+end
+
+function Arrow.arrow_right(self)
+      screen.pixel(self.position.x + 2  , self.position.y )
+      screen.pixel(self.position.x + 1  , self.position.y )
+      screen.pixel(self.position.x , self.position.y )
+      screen.pixel(self.position.x - 1  , self.position.y )
+      screen.pixel(self.position.x + 1  , self.position.y + 1)
+      screen.pixel(self.position.x + 1  , self.position.y - 1)
       screen.fill()
   end
 
@@ -203,7 +224,6 @@ function redraw()
   calc_position()
   draw_frame()
   draw_crosshair(note_position_one.x, note_position_one.y)
-  arrow_right()
   draw_position()
   draw_number()
   screen.update()
